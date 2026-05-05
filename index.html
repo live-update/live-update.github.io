@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhaskarjyoti Club | Official Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ================= VARIABLES & RESETS ================= */
+        :root {
+            --primary: #0f172a;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ================= LAYOUT & UTILITIES ================= */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .flex { display: flex; }
+        .flex-wrap { flex-wrap: wrap; }
+        .align-center { align-items: center; }
+        .space-between { justify-content: space-between; }
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 1rem; } .mt-2 { margin-top: 2rem; } .mb-1 { margin-bottom: 1rem; } .mb-2 { margin-bottom: 2rem; }
+        
+        /* Smooth View Animations */
+        .view-section { display: none; opacity: 0; transform: translateY(15px); }
+        .view-section.active { 
+            display: block; 
+            animation: fadeUp 0.4s ease-out forwards; 
+        }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ================= NAVBAR ================= */
+        header {
+            background-color: var(--primary);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 15px 0;
+        }
+        .logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-icon {
+            background: linear-gradient(135deg, var(--accent), #f59e0b);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; color: var(--primary);
+        }
+        .logo-text h1 { font-size: 1.2rem; margin: 0; letter-spacing: 1px; }
+        .logo-text p { font-size: 0.65rem; color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        
+        nav { display: flex; gap: 20px; align-items: center; }
+        nav button {
+            background: none; border: none; color: #cbd5e1; font-weight: 500; font-size: 0.85rem;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition);
+        }
+        nav button:hover { color: var(--accent); }
+        .btn-logout { background: #ef4444; color: white; padding: 6px 12px; border-radius: 20px; display: none; }
+        .btn-logout:hover { background: #dc2626; color: white; }
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        #mobile-menu { display: none; background: var(--primary); padding: 10px 20px; border-top: 1px solid #334155; }
+        #mobile-menu button { display: block; width: 100%; text-align: left; padding: 12px 0; color: white; border-bottom: 1px solid #334155; }
+
+        @media (max-width: 768px) {
+            nav { display: none; }
+            .mobile-menu-btn { display: block; }
+            #mobile-menu.active { display: block; }
+        }
+
+        /* ================= HERO SECTION ================= */
+        main { flex-grow: 1; padding-top: 70px; }
+        .hero {
+            position: relative; height: 50vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            background: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000&auto=format&fit=crop') center/cover;
+        }
+        .hero::before { content: ''; position: absolute; inset: 0; background: rgba(15,23,42,0.7); }
+        .hero-content { position: relative; z-index: 1; color: white; padding: 0 20px; }
+        .hero-content h2 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 15px; }
+        .hero-content p { color: var(--accent); font-weight: bold; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 25px; }
+        
+        /* ================= COMPONENTS (Cards, Buttons, Forms) ================= */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
+        
+        .card { background: var(--surface); border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); transition: var(--transition); border: 1px solid var(--border); }
+        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+        .card-header { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        
+        .btn-primary { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        
+        .btn-text { background: none; border: none; color: var(--primary); font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem; transition: var(--transition); }
+        .btn-text:hover { color: var(--accent); }
+
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: var(--text-dark); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--bg); transition: var(--transition); }
+        .form-control:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+
+        /* ================= SPECIFIC SECTIONS ================= */
+        .section-title { font-size: 2rem; color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+        .section-title::before { content: ''; display: block; width: 40px; height: 4px; background: var(--accent); border-radius: 2px; }
+
+        .post-meta { display: flex; gap: 10px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
+        .post-meta span { background: var(--bg); padding: 4px 10px; border-radius: 12px; color: var(--text-muted); }
+        
+        .admin-post-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border); }
+        .admin-post-item:last-child { border-bottom: none; }
+        .admin-actions button { margin-left: 10px; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-edit { background: var(--primary); color: white; }
+        .btn-delete { background: #fee2e2; color: #ef4444; }
+
+        /* ================= FOOTER ================= */
+        footer { background: var(--primary); color: #94a3b8; padding: 40px 20px 20px; margin-top: auto; font-size: 0.85rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 30px; }
+        .footer-title { color: white; font-size: 1.1rem; margin-bottom: 15px; font-weight: bold; }
+        .footer-links button { display: block; background: none; border: none; color: #94a3b8; cursor: pointer; margin-bottom: 8px; transition: var(--transition); }
+        .footer-links button:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container flex space-between align-center">
+            <div class="logo-wrap" onclick="navigate('home')">
+                <div class="logo-icon">BC</div>
+                <div class="logo-text">
+                    <h1>BHASKARJYOTI</h1>
+                    <p>Est. 1992</p>
+                </div>
+            </div>
+            <nav>
+                <button onclick="navigate('home')">Home</button>
+                <button onclick="navigate('about')">Committee</button>
+                <button onclick="navigate('contact')">Contact</button>
+                <button onclick="navigate('admin')"><i class="fas fa-lock"></i> Admin</button>
+                <button id="nav-logout-btn" class="btn-logout">Logout</button>
+            </nav>
+            <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+        <div id="mobile-menu">
+            <button onclick="navigate('home')">Home</button>
+            <button onclick="navigate('about')">Committee</button>
+            <button onclick="navigate('contact')">Contact</button>
+            <button onclick="navigate('admin')">Admin</button>
+            <button id="mobile-logout-btn" class="btn-logout" style="width:100%; text-align:left; background:transparent; padding-left:0; border-radius:0;">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="view-home" class="view-section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <p>Nagaon, Majuli</p>
+                    <h2>Brotherhood <br> Through Sports</h2>
+                    <button class="btn-primary" onclick="document.getElementById('news').scrollIntoView({behavior: 'smooth'})">Explore News</button>
+                </div>
+            </div>
+            <div class="container mb-2 mt-2" id="news">
+                <h2 class="section-title">Notice Board</h2>
+                <div id="posts-container" class="grid">
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading posts...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-single-post" class="view-section">
+            <div class="container mt-2 mb-2" style="max-width: 800px;">
+                <button class="btn-text mb-1" onclick="navigate('home')"><i class="fas fa-arrow-left"></i> Back to News</button>
+                <div class="card">
+                    <div class="post-meta">
+                        <span id="read-post-date"></span>
+                        <span id="read-post-author" style="color: var(--primary); background: #e0f2fe;"></span>
+                    </div>
+                    <h1 id="read-post-title" style="font-size: 2.5rem; line-height: 1.2; margin: 10px 0 20px;"></h1>
+                    <hr style="border:0; border-top: 3px solid var(--accent); width: 50px; margin-bottom: 20px;">
+                    <div id="read-post-content" style="white-space: pre-wrap; font-size: 1.1rem; color: #475569;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-about" class="view-section">
+            <div class="container mt-2 mb-2">
+                <h2 class="section-title">Our Organization</h2>
+                <div class="card mb-2 text-center" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <p>Established in 1992 in the heart of Nagaon, Majuli, our organization was founded with a unified vision: to foster brotherhood, community spirit, and physical excellence through sports and cultural events.</p>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-crown" style="color: var(--accent);"></i> Leadership</div>
+                        <p><strong>President:</strong> Bolin Ch. Nath</p>
+                        <p><strong>Vice President:</strong> Ratul Borah</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-pen-nib" style="color: var(--accent);"></i> Secretarial</div>
+                        <p><strong>Sec:</strong> Kamala Nath, Dhruba Jyoti Nath</p>
+                        <p><strong>Asst:</strong> Rajib Borah, Chanu Nath</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-futbol" style="color: var(--accent);"></i> Operations</div>
+                        <p><strong>Sports:</strong> Pinku N, Anurag M</p>
+                        <p><strong>Field:</strong> Arindam N, Rantu N</p>
+                        <p><strong>Tech:</strong> Roni N, Debajit B, Abhijit N, Hirok S.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-contact" class="view-section">
+            <div class="container mt-2 mb-2" style="max-width: 600px;">
+                <h2 class="section-title" style="justify-content: center;">Get in Touch</h2>
+                <div class="card">
+                    <form id="public-contact-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="contact-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="contact-email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Physical Address</label>
+                            <input type="text" id="contact-address" class="form-control" required placeholder="City, State, Pincode">
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea id="contact-message" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+                        <div id="contact-feedback" style="text-align: center; margin-top: 15px; font-weight: bold; display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-admin" class="view-section">
+            <div class="container mt-2 mb-2" style="max-width: 800px;">
+                
+                <div id="login-container" class="card" style="max-width: 400px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-lock" style="font-size: 2rem; color: var(--primary);"></i>
+                        <h2 class="mt-1">Admin Portal</h2>
+                    </div>
+                    <form id="login-form">
+                        <div class="form-group"><input type="email" id="login-email" class="form-control" placeholder="Admin Email" required></div>
+                        <div class="form-group"><input type="password" id="login-password" class="form-control" placeholder="Password" required></div>
+                        <button type="submit" class="btn-primary" style="width: 100%;">Secure Login</button>
+                        <div id="login-error" style="color: #ef4444; text-align: center; margin-top: 10px; display: none; font-weight:bold;"></div>
+                    </form>
+                </div>
+
+                <div id="dashboard-container" style="display: none;">
+                    <div class="card mb-2">
+                        <h2 class="card-header" id="form-heading"><i class="fas fa-bullhorn" style="color:var(--accent);"></i> Publish New Notice</h2>
+                        <form id="post-form">
+                            <div class="form-group"><input type="text" id="post-title" class="form-control" placeholder="Notice Title" required></div>
+                            <div class="form-group"><input type="text" id="post-author" class="form-control" placeholder="Author Name" required></div>
+                            <div class="form-group"><textarea id="post-content" class="form-control" rows="5" placeholder="Write content here..." required></textarea></div>
+                            <div class="flex" style="gap: 10px;">
+                                <button type="submit" class="btn-primary" id="submit-post-btn" style="flex:1;">Publish Notice</button>
+                                <button type="button" id="cancel-edit-btn" class="btn-primary" style="background:#64748b; display:none;">Cancel Edit</button>
+                            </div>
+                            <div id="post-message" style="text-align: center; margin-top: 10px; font-weight: bold; display: none;"></div>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-header"><i class="fas fa-tasks" style="color:var(--accent);"></i> Manage Existing Posts</h2>
+                        <div id="admin-posts-list">
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="view-privacy" class="view-section"><div class="container mt-2 mb-2 card" style="max-width:800px;"><h2 class="section-title">Privacy Policy</h2><p>We do not share, sell, or trade your personal information with third parties. Data submitted via the contact form is strictly used by the committee to respond to your inquiries.</p></div></div>
+        <div id="view-disclaimer" class="view-section"><div class="container mt-2 mb-2 card" style="max-width:800px;"><h2 class="section-title">Disclaimer</h2><p>The information provided by Bhaskarjyoti Club is for general information purposes only. Any reliance you place on such information is strictly at your own risk.</p></div></div>
+    </main>
+
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <div class="footer-title">Bhaskarjyoti Club</div>
+                <p>Uniting the community of Nagaon, Majuli through sports, culture, and brotherhood since 1992.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-title">Quick Links</div>
+                <button onclick="navigate('home')">Home</button>
+                <button onclick="navigate('about')">Committee</button>
+                <button onclick="navigate('contact')">Contact Us</button>
+            </div>
+            <div class="footer-links">
+                <div class="footer-title">Legal</div>
+                <button onclick="navigate('privacy')">Privacy Policy</button>
+                <button onclick="navigate('disclaimer')">Disclaimer</button>
+            </div>
+        </div>
+        <div class="container text-center" style="color: #64748b;">&copy; 2026 Bhaskarjyoti Club. All Rights Reserved.</div>
+    </footer>
+
+    <script type="module">
+        // Import Firebase modules (Added doc, updateDoc, deleteDoc for Editing/Deleting)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmXewXcQQt97EJzbKceLbCoTTG_9aJlJI",
+            authDomain: "bhaskarjyoticlub.firebaseapp.com",
+            databaseURL: "https://bhaskarjyoticlub-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bhaskarjyoticlub",
+            storageBucket: "bhaskarjyoticlub.firebasestorage.app",
+            messagingSenderId: "730168687443",
+            appId: "1:730168687443:web:479bedc258bd9dd06fffa6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- NAVIGATION LOGIC ---
+        window.navigate = function(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Force DOM reflow to restart animation
+            void document.getElementById(`view-${viewId}`).offsetWidth; 
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('mobile-menu').style.display = 'none';
+        };
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // --- FETCH POSTS ---
+        let allPosts = [];
+        const postsContainer = document.getElementById('posts-container');
+        const adminPostsList = document.getElementById('admin-posts-list');
+        
+        onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snapshot) => {
+            postsContainer.innerHTML = '';
+            adminPostsList.innerHTML = '';
+            allPosts = [];
+            
+            if (snapshot.empty) {
+                postsContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#64748b;">No recent news available.</div>';
+                adminPostsList.innerHTML = '<p>No posts found.</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const post = doc.data();
+                post.id = doc.id;
+                post.dateString = post.createdAt ? post.createdAt.toDate().toLocaleDateString() : 'Just now';
+                allPosts.push(post);
+                const postIndex = allPosts.length - 1;
+
+                // 1. Render Public Notice Board
+                const snippet = post.content.length > 120 ? post.content.substring(0, 120) + '...' : post.content;
+                postsContainer.innerHTML += `
+                    <div class="card">
+                        <div class="post-meta">
+                            <span>${post.dateString}</span>
+                        </div>
+                        <h3 style="margin-bottom:10px; font-size:1.3rem;">${post.title}</h3>
+                        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:15px;">${snippet}</p>
+                        <button class="btn-text" onclick="readFullPost(${postIndex})">Read Story <i class="fas fa-arrow-right"></i></button>
+                    </div>`;
+
+                // 2. Render Admin Management List
+                adminPostsList.innerHTML += `
+                    <div class="admin-post-item">
+                        <div>
+                            <strong>${post.title}</strong>
+                            <div style="font-size:0.8rem; color:#64748b;">${post.dateString} - by ${post.author}</div>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="btn-edit" onclick="editPost(${postIndex})"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn-delete" onclick="deletePost('${post.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        });
+
+        window.readFullPost = function(index) {
+            const post = allPosts[index];
+            document.getElementById('read-post-title').innerText = post.title;
+            document.getElementById('read-post-author').innerHTML = `<i class="fas fa-user-edit"></i> ${post.author}`;
+            document.getElementById('read-post-date').innerText = post.dateString;
+            document.getElementById('read-post-content').innerText = post.content;
+            navigate('single-post');
+        };
+
+        // --- PUBLIC CONTACT FORM ---
+        document.getElementById('public-contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgBox = document.getElementById('contact-feedback');
+            msgBox.style.display = 'block'; msgBox.style.color = '#3b82f6'; msgBox.innerText = 'Sending...';
+            try {
+                await addDoc(collection(db, "messages"), {
+                    name: document.getElementById('contact-name').value,
+                    email: document.getElementById('contact-email').value,
+                    address: document.getElementById('contact-address').value,
+                    message: document.getElementById('contact-message').value,
+                    timestamp: serverTimestamp()
+                });
+                msgBox.style.color = '#22c55e'; msgBox.innerText = 'Success! Message sent.';
+                e.target.reset(); setTimeout(() => msgBox.style.display = 'none', 4000);
+            } catch (err) {
+                msgBox.style.color = '#ef4444'; msgBox.innerText = 'Error sending message.';
+            }
+        });
+
+        // --- AUTH & ADMIN PORTAL ---
+        const loginContainer = document.getElementById('login-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const navLogoutBtn = document.getElementById('nav-logout-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                navLogoutBtn.style.display = 'block';
+                mobileLogoutBtn.style.display = 'block';
+            } else {
+                loginContainer.style.display = 'block';
+                dashboardContainer.style.display = 'none';
+                navLogoutBtn.style.display = 'none';
+                mobileLogoutBtn.style.display = 'none';
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errDiv = document.getElementById('login-error');
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+                errDiv.style.display = 'none'; e.target.reset();
+            } catch (err) { errDiv.style.display = 'block'; errDiv.innerText = "Access Denied."; }
+        });
+
+        const handleLogout = async () => await signOut(auth);
+        navLogoutBtn.addEventListener('click', handleLogout);
+        mobileLogoutBtn.addEventListener('click', handleLogout);
+
+        // --- ADD / EDIT / DELETE POSTS ---
+        let editingPostId = null; // State tracker for Edit Mode
+        const postForm = document.getElementById('post-form');
+        const submitPostBtn = document.getElementById('submit-post-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const formHeading = document.getElementById('form-heading');
+        const postMsg = document.getElementById('post-message');
+
+        // Function to populate form when "Edit" is clicked
+        window.editPost = function(index) {
+            const post = allPosts[index];
+            editingPostId = post.id;
+            
+            // Fill Form
+            document.getElementById('post-title').value = post.title;
+            document.getElementById('post-author').value = post.author;
+            document.getElementById('post-content').value = post.content;
+            
+            // Change UI State
+            formHeading.innerHTML = `<i class="fas fa-edit" style="color:var(--accent);"></i> Edit Notice`;
+            submitPostBtn.innerText = 'Update Notice';
+            cancelEditBtn.style.display = 'block';
+            
+            // Scroll to form
+            formHeading.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        // Function to Cancel Edit Mode
+        cancelEditBtn.addEventListener('click', () => {
+            editingPostId = null;
+            postForm.reset();
+            formHeading.innerHTML = `<i class="fas fa-bullhorn" style="color:var(--accent);"></i> Publish New Notice`;
+            submitPostBtn.innerText = 'Publish Notice';
+            cancelEditBtn.style.display = 'none';
+        });
+
+        // Function to Delete a post
+        window.deletePost = async function(id) {
+            if(confirm("Are you sure you want to delete this notice? This cannot be undone.")) {
+                try {
+                    await deleteDoc(doc(db, "posts", id));
+                    if(editingPostId === id) cancelEditBtn.click(); // Reset form if they were editing the deleted post
+                } catch(error) {
+                    alert("Error deleting post. Ensure you are logged in.");
+                }
+            }
+        };
+
+        // Handle Add OR Update Form Submission
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            postMsg.style.display = 'block'; postMsg.style.color = '#3b82f6'; postMsg.innerText = 'Saving...';
+            
+            const title = document.getElementById('post-title').value;
+            const author = document.getElementById('post-author').value;
+            const content = document.getElementById('post-content').value;
+
+            try {
+                if (editingPostId) {
+                    // Update Existing Post
+                    await updateDoc(doc(db, "posts", editingPostId), { title, author, content });
+                    postMsg.style.color = '#22c55e'; postMsg.innerText = 'Notice Updated!';
+                } else {
+                    // Add New Post
+                    await addDoc(collection(db, "posts"), { title, author, content, createdAt: serverTimestamp() });
+                    postMsg.style.color = '#22c55e'; postMsg.innerText = 'Notice Live!';
+                }
+                
+                // Reset form & state
+                cancelEditBtn.click(); 
+                setTimeout(() => postMsg.style.display = 'none', 3000);
+                
+            } catch (err) { 
+                postMsg.style.color = '#ef4444'; postMsg.innerText = 'Error saving.'; 
+            }
+        });
+    </script>
+</body>
+</html>
