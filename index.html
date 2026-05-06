@@ -152,10 +152,9 @@
     .logo-tagline {
       font-size: 0.8rem;
       margin: 0;
-      color: var(--accent);
     }
     header.scrolled .logo-tagline, body.inner-page header .logo-tagline {
-      color: #b45309;
+      color: var(--text-dark);
     }
 
     /* Desktop Nav */
@@ -550,10 +549,12 @@
       margin-bottom: 35px;
     }
     .committee-section h3 {
-      font-size: 1.25rem;
+      background-color: var(--bg);
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 1.2rem;
       color: var(--primary);
-      margin-bottom: 15px;
-      padding-bottom: 10px;
+      padding-bottom: 1px;
       border-bottom: 2px solid var(--bg);
       display: flex;
       align-items: center;
@@ -569,9 +570,9 @@
     .committee-list li {
       display: flex;
       flex-direction: column;
-      padding: 12px 0;
+      padding: 5px 0;
       border-bottom: 1px dashed var(--border);
-      font-size: 1.05rem;
+      font-size: 1.0rem;
     }
     .committee-list li:last-child {
       border-bottom: none;
