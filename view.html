@@ -1,317 +1,658 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crew & Commentator Dashboard</title>
-    <style>
-        :root {
-            --bg: #f4f6f8;
-            --surface: #ffffff;
-            --surface-light: #f0f2f5;
-            --text: #1a1a1a;
-            --text-muted: #555566;
-            --accent: #0056b3;
-            --danger: #dc3545;
-            --success: #28a745;
-            --warning: #ffc107;
-            --border: #dee2e6;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crew & Commentator Dashboard</title>
+  <style>
+:root {
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --surface-light: #f0f2f5;
+    --text: #1a1a1a;
+    --text-muted: #555566;
+    --accent: #0056b3;
+    --danger: #dc3545;
+    --success: #28a745;
+    --warning: #ffc107;
+    --offline: #9e9e9e;
+    --border: #dee2e6;
+  }
 
-        body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 24px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
-        .live-badge { background: var(--danger); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; animation: pulse 2s infinite; letter-spacing: 1px;}
-        .clock { font-size: 20px; font-weight: bold; font-family: monospace; color: var(--text); background: var(--surface-light); padding: 5px 15px; border-radius: 8px; border: 1px solid var(--border);}
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
 
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
-        
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .card-title { font-size: 14px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        /* Main Score Area */
-        .main-score { display: flex; align-items: center; justify-content: space-between; background: var(--surface-light); padding: 20px 40px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .team-name { font-size: 48px; font-weight: 900; color: var(--accent); }
-        .score-display { font-size: 72px; font-weight: 900; line-height: 1; color: var(--text); }
-        .wickets { color: var(--danger); }
-        .overs-display { font-size: 24px; color: var(--text-muted); text-align: right; margin-top: 5px; }
-        .overs-display span.over-val { color: var(--text); font-weight: bold; }
-        .vs-team { font-size: 20px; color: var(--text-muted); margin-top: 10px; font-weight: bold;}
-        
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--surface-light); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
-        .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .stat-value { font-size: 28px; font-weight: bold; color: var(--text); }
-        .stat-value.highlight { color: var(--accent); }
+    .live-badge {
+      background: var(--danger);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      transition: background 0.3s;
+      letter-spacing: 1px;
+    }
+    .is-blinking {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
 
-        /* Timeline / This Over */
-        .timeline-container { background: var(--surface-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
-        .timeline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .ball { width: 40px; height: 40px; border-radius: 50%; background: #e9ecef; color: var(--text); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; border: 1px solid #ced4da;}
-        .ball.w { background: var(--danger); color: white; border-color: var(--danger); }
-        .ball.four { background: var(--accent); color: white; border-color: var(--accent); }
-        .ball.six { background: var(--danger); color: white; border-color: var(--danger); }
+      50% {
+        opacity: 0.5;
+      }
 
-        /* Side Panel */
-        .side-panel { display: flex; flex-direction: column; gap: 20px; }
-        
-        /* Broadcast Status */
-        .on-air-status { border-left: 5px solid var(--danger); background: #fff5f5; padding: 15px; border-radius: 0 8px 8px 0; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);}
-        .on-air-text { font-size: 24px; font-weight: bold; color: var(--danger); margin-top: 5px; }
+      100% {
+        opacity: 1;
+      }
+    }
 
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { color: var(--text-muted); font-size: 14px; font-weight: bold; }
-        .info-value { font-weight: bold; font-size: 16px; color: var(--text); }
+    .clock {
+      font-size: 20px;
+      font-weight: bold;
+      font-family: monospace;
+      color: var(--text);
+      background: var(--surface-light);
+      padding: 5px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
 
-        .status-banner { background: var(--warning); color: #000; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 18px; text-transform: uppercase; margin-top: 20px; border: 1px solid #e0a800;}
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-        /* --- MOBILE RESPONSIVENESS --- */
-        @media (max-width: 1024px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: bold;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+    }
 
-        @media (max-width: 768px) {
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .header h1 { font-size: 18px; }
-            .clock { font-size: 16px; width: 100%; box-sizing: border-box; text-align: center; }
-            
-            .main-score { flex-direction: column; align-items: flex-start; padding: 20px; gap: 20px; }
-            .main-score > div { width: 100%; text-align: left !important; }
-            .score-display { font-size: 60px; }
-            .overs-display { text-align: left; }
-            
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .card { padding: 15px; }
-        }
+    /* Main Score Area */
+    .main-score {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-light);
+      padding: 20px 40px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .team-name {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--accent);
+    }
+    .score-display {
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--text);
+    }
+    .wickets {
+      color: var(--danger);
+    }
+    .overs-display {
+      font-size: 24px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 5px;
+    }
+    .overs-display span.over-val {
+      color: var(--text);
+      font-weight: bold;
+    }
+    .vs-team {
+      font-size: 20px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      font-weight: bold;
+    }
 
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .team-name { font-size: 36px; }
-            .score-display { font-size: 48px; }
-            .ball { width: 35px; height: 35px; font-size: 14px; }
-        }
-    </style>
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: var(--surface-light);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text);
+    }
+    .stat-value.highlight {
+      color: var(--accent);
+    }
+
+    /* Timeline / This Over */
+    .timeline-container {
+      background: var(--surface-light);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .timeline {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .ball {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e9ecef;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 1px solid #ced4da;
+    }
+    .ball.w {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+    .ball.four {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .ball.six {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    /* Side Panel */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Broadcast Status */
+    .on-air-status {
+      border-left: 5px solid var(--danger);
+      background: #fff5f5;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .on-air-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--danger);
+      margin-top: 5px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .info-value {
+      font-weight: bold;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .status-banner {
+      background: var(--warning);
+      color: #000;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 18px;
+      text-transform: uppercase;
+      margin-top: 20px;
+      border: 1px solid #e0a800;
+    }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .header h1 {
+        font-size: 18px;
+      }
+      .clock {
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      .main-score {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 20px;
+      }
+      .main-score > div {
+        width: 100%;
+        text-align: left !important;
+      }
+      .score-display {
+        font-size: 60px;
+      }
+      .overs-display {
+        text-align: left;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .card {
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .team-name {
+        font-size: 36px;
+      }
+      .score-display {
+        font-size: 48px;
+      }
+      .ball {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="header">
-    <h1><span class="live-badge">LIVE</span> CREW & COMMENTARY DASHBOARD</h1>
-    <div class="clock" id="systemClock">00:00:00</div>
-</div>
+  <div class="header">
+    <h1><span class="live-badge is-blinking" id="crewBadge">LIVE</span> CREW DASHBOARD</h1>
+    <div class="clock" id="systemClock">
+      00:00:00
+    </div>
+  </div>
 
-<div class="dashboard-grid">
+  <div class="dashboard-grid">
+    <!-- Main Left Column -->
     <div>
-        <div class="card">
-            <div class="card-title">Live Match Score</div>
-            
-            <div class="main-score">
-                <div>
-                    <div class="team-name" id="batTeam">IND</div>
-                    <div class="vs-team">vs <span id="bowlTeam">AUS</span></div>
-                </div>
-                <div style="text-align: right;">
-                    <div class="score-display">
-                        <span id="score">0</span><span class="wickets">-<span id="wickets">0</span></span>
-                    </div>
-                    <div class="overs-display">Overs: <span class="over-val" id="overs">0.0</span> / <span id="maxOvers">20</span></div>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">Current RR</div>
-                    <div class="stat-value" id="crr">0.00</div>
-                </div>
-                <div class="stat-box" id="projBox">
-                    <div class="stat-label">Projected</div>
-                    <div class="stat-value highlight" id="proj">0</div>
-                </div>
-                <div class="stat-box" id="reqBox" style="display: none;">
-                    <div class="stat-label">Runs Needed</div>
-                    <div class="stat-value highlight" id="need">0</div>
-                </div>
-                <div class="stat-box" id="rrrBox" style="display: none;">
-                    <div class="stat-label">Required RR</div>
-                    <div class="stat-value" id="rrr" style="color: var(--danger);">0.00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Target</div>
-                    <div class="stat-value" id="target">-</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Innings</div>
-                    <div class="stat-value" id="inningsDisplay">1</div>
-                </div>
-            </div>
-
-            <div class="timeline-container">
-                <div class="card-title" style="margin-bottom: 10px;">This Over</div>
-                <div class="timeline" id="timeline">
-                    <div style="color: var(--text-muted); font-size: 14px;">Waiting for first ball...</div>
-                </div>
-            </div>
-
-            <div class="status-banner" id="matchStatusText">
-                Match starting soon...
-            </div>
+      <div class="card">
+        <div class="card-title">
+          Live Match Score
         </div>
+
+        <div class="main-score">
+          <div>
+            <div class="team-name" id="batTeam">
+              IND
+            </div>
+            <div class="vs-team">
+              vs <span id="bowlTeam">AUS</span>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div class="score-display">
+              <span id="score">0</span><span class="wickets">-<span id="wickets">0</span></span>
+            </div>
+            <div class="overs-display">
+              Overs: <span class="over-val" id="overs">0.0</span> / <span id="maxOvers">20</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">
+              Current RR
+            </div>
+            <div class="stat-value" id="crr">
+              0.00
+            </div>
+          </div>
+          <div class="stat-box" id="projBox">
+            <div class="stat-label">
+              Projected
+            </div>
+            <div class="stat-value highlight" id="proj">
+              0
+            </div>
+          </div>
+          <div class="stat-box" id="reqBox" style="display: none;">
+            <div class="stat-label">
+              Runs Needed
+            </div>
+            <div class="stat-value highlight" id="need">
+              0
+            </div>
+          </div>
+          <div class="stat-box" id="rrrBox" style="display: none;">
+            <div class="stat-label">
+              Required RR
+            </div>
+            <div class="stat-value" id="rrr" style="color: var(--danger);">
+              0.00
+            </div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">
+              Target
+            </div>
+            <div class="stat-value" id="target">
+              -
+            </div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">
+              Innings
+            </div>
+            <div class="stat-value" id="inningsDisplay">
+              1
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-container">
+          <div class="card-title" style="margin-bottom: 10px;">
+            This Over
+          </div>
+          <div class="timeline" id="timeline">
+            <div style="color: var(--text-muted); font-size: 14px;">
+              Waiting for first ball...
+            </div>
+          </div>
+        </div>
+
+        <div class="status-banner" id="matchStatusText">
+          Match starting soon...
+        </div>
+      </div>
     </div>
 
+    <!-- Side Right Column -->
     <div class="side-panel">
-        <div class="card">
-            <div class="card-title">Broadcast Director Status</div>
-            <div class="on-air-status">
-                <div class="stat-label" style="color: var(--danger);">CURRENTLY ON AIR (OBS SCENE)</div>
-                <div class="on-air-text" id="activeSceneText">LIVE SCOREBOARD</div>
-            </div>
+      <div class="card">
+        <div class="card-title">
+          Broadcast Director Status
+        </div>
+        <div class="on-air-status">
+          <div class="stat-label" style="color: var(--danger);">
+            CURRENTLY ON AIR (OBS SCENE)
+          </div>
+          <div class="on-air-text" id="activeSceneText">
+            LIVE SCOREBOARD
+          </div>
+        </div>
 
-            <div style="margin-top: 20px;">
-                <div class="info-row">
-                    <span class="info-label">Event/Brand</span>
-                    <span class="info-value" id="brandText">None</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Timer Status</span>
-                    <span class="info-value" id="timerInfo">Inactive</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Winner Locked</span>
-                    <span class="info-value" id="winnerInfo">No</span>
-                </div>
-            </div>
+        <div style="margin-top: 20px;">
+          <div class="info-row">
+            <span class="info-label">Event/Brand</span>
+            <span class="info-value" id="brandText">None</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Timer Status</span>
+            <span class="info-value" id="timerInfo">Inactive</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Winner Locked</span>
+            <span class="info-value" id="winnerInfo">No</span>
+          </div>
         </div>
-        
-        <div class="card">
-            <div class="card-title">Match Meta Data</div>
-            <div class="info-row">
-                <span class="info-label">Total Balls Bowled</span>
-                <span class="info-value" id="totalBallsRaw">0</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Balls Remaining (Inns)</span>
-                <span class="info-value" id="ballsRemaining">0</span>
-            </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Match Meta Data
         </div>
+        <div class="info-row">
+          <span class="info-label">Total Balls Bowled</span>
+          <span class="info-value" id="totalBallsRaw">0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Balls Remaining (Inns)</span>
+          <span class="info-value" id="ballsRemaining">0</span>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+  <script type="module">
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      goOnline,
+      goOffline
+    } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBmXewXcQQt97EJzbKceLbCoTTG_9aJlJI",
-  authDomain: "bhaskarjyoticlub.firebaseapp.com",
-  databaseURL: "https://bhaskarjyoticlub-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "bhaskarjyoticlub",
-  storageBucket: "bhaskarjyoticlub.firebasestorage.app",
-  messagingSenderId: "730168687443",
-  appId: "1:730168687443:web:479bedc258bd9dd06fffa6"
+      authDomain: "bhaskarjyoticlub.firebaseapp.com",
+      databaseURL: "https://bhaskarjyoticlub-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bhaskarjyoticlub",
+      storageBucket: "bhaskarjyoticlub.firebasestorage.app",
+      messagingSenderId: "730168687443",
+      appId: "1:730168687443:web:479bedc258bd9dd06fffa6"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const matchRef = ref(db, 'broadcast_state');
+    const connectedRef = ref(db, ".info/connected");
 
     // System Clock
     setInterval(() => {
-        document.getElementById('systemClock').innerText = new Date().toLocaleTimeString('en-IN', { hour12: true });
+      document.getElementById('systemClock').innerText = new Date().toLocaleTimeString('en-IN', {
+        hour12: true
+      });
     }, 1000);
 
-    onValue(matchRef, (snapshot) => {
-        const data = snapshot.val();
-        if (!data) return;
+    // --- CONNECTION HANDLING ---
+    let isConnected = false;
 
-        // Score Basics
-        document.getElementById('batTeam').innerText = data.batTeam || "IND";
-        document.getElementById('bowlTeam').innerText = data.bowlTeam || "AUS";
-        document.getElementById('score').innerText = data.runs || 0;
-        document.getElementById('wickets').innerText = data.wickets || 0;
-        document.getElementById('maxOvers').innerText = data.maxOvers || 20;
-        document.getElementById('inningsDisplay').innerText = data.innings || 1;
-        document.getElementById('matchStatusText').innerText = data.statusBar || "";
-        document.getElementById('brandText').innerText = data.brandTitle || "None";
-        document.getElementById('winnerInfo').innerText = data.winText ? "Yes" : "No";
+    function evaluateConnection() {
+      const badge = document.getElementById('crewBadge');
+      if (!navigator.onLine) {
+        badge.style.background = 'var(--offline)';
+        badge.innerText = 'OFFLINE';
+        badge.classList.remove('is-blinking');
+      } else if (!isConnected) {
+        badge.style.background = 'var(--warning)';
+        badge.innerText = 'RECONNECTING';
+        badge.classList.remove('is-blinking');
+      } else {
+        badge.style.background = 'var(--danger)';
+        badge.innerText = 'LIVE';
+        badge.classList.add('is-blinking');
+      }
+    }
 
-        // Overs & Balls
-        const totalBalls = data.totalBalls || 0;
-        const maxBalls = (data.maxOvers || 20) * 6;
-        document.getElementById('overs').innerText = Math.floor(totalBalls / 6) + "." + (totalBalls % 6);
-        document.getElementById('totalBallsRaw').innerText = totalBalls;
-        document.getElementById('ballsRemaining').innerText = maxBalls - totalBalls;
-
-        // Run Rates & Target Logic
-        const oversDec = totalBalls / 6;
-        const crr = totalBalls > 0 ? ((data.runs || 0) / oversDec).toFixed(2) : "0.00";
-        document.getElementById('crr').innerText = crr;
-
-        const projBox = document.getElementById('projBox');
-        const reqBox = document.getElementById('reqBox');
-        const rrrBox = document.getElementById('rrrBox');
-
-        if (data.innings === 2) {
-            projBox.style.display = "none";
-            reqBox.style.display = "block";
-            rrrBox.style.display = "block";
-            
-            document.getElementById('target').innerText = data.target || 0;
-            const ballsLeft = maxBalls - totalBalls;
-            const runsNeeded = (data.target || 0) - (data.runs || 0);
-            
-            document.getElementById('need').innerText = runsNeeded > 0 ? runsNeeded : 0;
-            document.getElementById('rrr').innerText = ballsLeft > 0 ? (runsNeeded / (ballsLeft / 6)).toFixed(2) : "0.00";
-        } else {
-            projBox.style.display = "block";
-            reqBox.style.display = "none";
-            rrrBox.style.display = "none";
-            
-            document.getElementById('target').innerText = "-";
-            document.getElementById('proj').innerText = Math.round(crr * (data.maxOvers || 20));
-        }
-
-        // Timeline (This Over)
-        const timelineDiv = document.getElementById('timeline');
-        if (data.thisOver && data.thisOver.length > 0) {
-            timelineDiv.innerHTML = data.thisOver.map(ball => {
-                let className = "ball";
-                if(ball === 'W') className += " w";
-                if(ball === '4') className += " four";
-                if(ball === '6') className += " six";
-                return `<div class="${className}">${ball}</div>`;
-            }).join('');
-        } else {
-            timelineDiv.innerHTML = `<div style="color: var(--text-muted); font-size: 14px;">Start of over...</div>`;
-        }
-
-        // Broadcast / Director Info
-        const sceneMap = {
-            'live': '1. LIVE SCOREBOARD',
-            'timer': '2. PRE-MATCH TIMER',
-            'decision': '3. UMPIRE DECISION',
-            'winner': '4. MATCH RESULT',
-            'custom': '5. CUSTOM GRAPHIC / AD'
-        };
-        
-        const activeScene = data.activeScene || 'live';
-        const sceneTextEl = document.getElementById('activeSceneText');
-        sceneTextEl.innerText = sceneMap[activeScene];
-        
-        // Change color based on scene type to alert crew
-        if(activeScene === 'live') sceneTextEl.style.color = 'var(--danger)'; 
-        else if (activeScene === 'custom') sceneTextEl.style.color = 'var(--accent)'; 
-        else sceneTextEl.style.color = '#d39e00'; // Darker yellow for warning
-
-        // Timer Info
-        if (data.timerTarget && new Date(data.timerTarget).getTime() > new Date().getTime()) {
-            document.getElementById('timerInfo').innerText = "Active (" + data.timerMessage + ")";
-        } else {
-            document.getElementById('timerInfo').innerText = "Inactive";
-        }
+    window.addEventListener('online', () => {
+      goOnline(db); evaluateConnection();
     });
-</script>
+    window.addEventListener('offline', () => {
+      goOffline(db); evaluateConnection();
+    });
+    onValue(connectedRef, (snap) => {
+      isConnected = snap.val() === true; evaluateConnection();
+    });
+
+    // --- MAIN DATA HANDLING ---
+    onValue(matchRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      // Score Basics
+      document.getElementById('batTeam').innerText = data.batTeam || "IND";
+      document.getElementById('bowlTeam').innerText = data.bowlTeam || "AUS";
+      document.getElementById('score').innerText = data.runs || 0;
+      document.getElementById('wickets').innerText = data.wickets || 0;
+      document.getElementById('maxOvers').innerText = data.maxOvers || 20;
+      document.getElementById('inningsDisplay').innerText = data.innings || 1;
+      document.getElementById('matchStatusText').innerText = data.statusBar || "";
+      document.getElementById('brandText').innerText = data.brandTitle || "None";
+      document.getElementById('winnerInfo').innerText = data.winText ? "Yes": "No";
+
+      // Overs & Balls
+      const totalBalls = data.totalBalls || 0;
+      const maxBalls = (data.maxOvers || 20) * 6;
+      document.getElementById('overs').innerText = Math.floor(totalBalls / 6) + "." + (totalBalls % 6);
+      document.getElementById('totalBallsRaw').innerText = totalBalls;
+      document.getElementById('ballsRemaining').innerText = maxBalls - totalBalls;
+
+      // Run Rates & Target Logic
+      const oversDec = totalBalls / 6;
+      const crr = totalBalls > 0 ? ((data.runs || 0) / oversDec).toFixed(2): "0.00";
+      document.getElementById('crr').innerText = crr;
+
+      const projBox = document.getElementById('projBox');
+      const reqBox = document.getElementById('reqBox');
+      const rrrBox = document.getElementById('rrrBox');
+
+      if (data.innings === 2) {
+        projBox.style.display = "none";
+        reqBox.style.display = "block";
+        rrrBox.style.display = "block";
+
+        document.getElementById('target').innerText = data.target || 0;
+        const ballsLeft = maxBalls - totalBalls;
+        const runsNeeded = (data.target || 0) - (data.runs || 0);
+
+        document.getElementById('need').innerText = runsNeeded > 0 ? runsNeeded: 0;
+        document.getElementById('rrr').innerText = ballsLeft > 0 ? (runsNeeded / (ballsLeft / 6)).toFixed(2): "0.00";
+      } else {
+        projBox.style.display = "block";
+        reqBox.style.display = "none";
+        rrrBox.style.display = "none";
+
+        document.getElementById('target').innerText = "-";
+        document.getElementById('proj').innerText = Math.round(crr * (data.maxOvers || 20));
+      }
+
+      // Timeline (This Over)
+      const timelineDiv = document.getElementById('timeline');
+      if (data.thisOver && data.thisOver.length > 0) {
+        timelineDiv.innerHTML = data.thisOver.map(ball => {
+          let className = "ball";
+          if (ball === 'W') className += " w";
+          if (ball === '4') className += " four";
+          if (ball === '6') className += " six";
+          return `<div class="${className}">${ball}</div>`;
+        }).join('');
+      } else {
+        timelineDiv.innerHTML = `<div style="color: var(--text-muted); font-size: 14px;">Start of over...</div>`;
+      }
+
+      // Broadcast / Director Info
+      const sceneMap = {
+        'live': '1. LIVE SCOREBOARD',
+        'timer': '2. PRE-MATCH TIMER',
+        'decision': '3. UMPIRE DECISION',
+        'winner': '4. MATCH RESULT',
+        'custom': '5. CUSTOM GRAPHIC / AD'
+      };
+
+      const activeScene = data.activeScene || 'live';
+      const sceneTextEl = document.getElementById('activeSceneText');
+      sceneTextEl.innerText = sceneMap[activeScene];
+
+      // Change color based on scene type to alert crew
+      if (activeScene === 'live') sceneTextEl.style.color = 'var(--danger)';
+      else if (activeScene === 'custom') sceneTextEl.style.color = 'var(--accent)';
+      else sceneTextEl.style.color = '#d39e00'; // Darker yellow for warning
+
+      // Timer Info
+      if (data.timerTarget && new Date(data.timerTarget).getTime() > new Date().getTime()) {
+        document.getElementById('timerInfo').innerText = "Active (" + data.timerMessage + ")";
+      } else {
+        document.getElementById('timerInfo').innerText = "Inactive";
+      }
+    });
+
+    evaluateConnection();
+  </script>
 </body>
 </html>
