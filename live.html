@@ -36,7 +36,7 @@
       align-items: center;
       gap: 8px;
       color: #dc3545;
-      text-transform: uppercase;
+      text-transform: capitalize;
       letter-spacing: 2px;
       transition: color 0.3s;
     }
@@ -73,11 +73,11 @@
       display: flex;
       align-items: center;
       gap: 15px;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      border: 1px solid #ccc;
+      background:;
+      padding:;
+      border-radius:;
+      box-shadow:;
+      border:;
       z-index: 1000;
     }
     .brand-logo {
@@ -199,7 +199,7 @@
       background: #ffffff;
       color: #222;
       padding: 12px 30px;
-      font-size: 22px;
+      font-size: 28px;
       font-family: 'Segoe UI', sans-serif;
       font-weight: bold;
       border-top: 1px solid #ddd;
@@ -210,7 +210,7 @@
     }
     .stat-val {
       color: #000;
-      font-size: 24px;
+      font-size: 28px;
     }
     #rrr {
       color: #dc3545 !important;
@@ -244,7 +244,7 @@
       font-size: 20px;
       font-family: 'Segoe UI', sans-serif;
       font-weight: bold;
-      text-transform: uppercase;
+      text-transform: capitalize;
       text-align: center;
       letter-spacing: 2px;
     }
@@ -284,7 +284,6 @@
       text-transform: uppercase;
       letter-spacing: 8px;
       text-shadow: 0 0 30px rgba(0,0,0,0.5);
-      border: 5px solid white;
       padding: 20px 50px;
     }
     .decision-sub {
@@ -478,7 +477,7 @@
             <span id="score">0</span>-<span id="wickets">0</span>
           </div>
           <div class="overs-text">
-            OVERS <span id="overs">0.0</span>
+            Overs <span id="overs">0.0</span>
           </div>
         </div>
         <div class="vs-team">
@@ -487,10 +486,10 @@
       </div>
       <div class="stats-bar">
         <div class="stat-item">
-          CRR: <span class="stat-val" id="crr">0.00</span>
+          CRR: <span class="stat-val" id="crr"></span>
         </div>
         <div class="stat-item" id="projGroup">
-          PROJ: <span class="stat-val" id="proj">0</span>
+          PROJ: <span class="stat-val" id="proj"></span>
         </div>
         <div style="display:none; align-items:center;" id="targetGroup">
           <span class="stat-item">TARGET: <span class="stat-val" id="target">0</span></span>
@@ -599,7 +598,7 @@
         indicator.style.color = '#ff9800';
         dot.style.background = '#ff9800';
         dot.style.animation = 'none';
-        text.innerText = 'RECONNECTING';
+        text.innerText = 'Connecting';
       } else {
         indicator.style.color = '#dc3545';
         dot.style.background = '#dc3545';
