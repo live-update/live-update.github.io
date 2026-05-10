@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Event Pass Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        /* --- CONTROL PANEL (FORM) --- */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #111;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            background: #f9f9f9;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #00c6ff;
+            outline: none;
+        }
+
+        button {
+            padding: 14px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 114, 255, 0.3);
+        }
+
+        .btn-download {
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            margin-top: 15px;
+            display: none; /* Hidden until generated */
+        }
+
+        .btn-download:hover {
+            box-shadow: 0 8px 15px rgba(56, 239, 125, 0.3);
+        }
+
+        /* --- EVENT ID CARD STYLES --- */
+        .card-wrapper {
+            display: none; /* Hidden until generated */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .id-card {
+            width: 320px;
+            height: 500px;
+            background: #ffffff;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: center;
+            /* Creating a subtle grid pattern for modern event feel */
+            background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Top colored bar */
+        .card-header {
+            background: #111;
+            color: white;
+            padding: 30px 15px 15px;
+            position: relative;
+        }
+
+        /* Lanyard hole punch */
+        .lanyard-hole {
+            width: 60px;
+            height: 12px;
+            background: #f4f4f4;
+            border-radius: 10px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .event-name {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #00c6ff;
+        }
+
+        .card-body {
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .photo-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 15px;
+            padding: 5px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            margin-bottom: 20px;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .attendee-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 5px;
+            line-height: 1.1;
+        }
+
+        .attendee-company {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .qr-placeholder {
+            width: 100%;
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* The bold role badge at the bottom */
+        .role-badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            color: white;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Dynamic Role Colors */
+        .role-vip { background: linear-gradient(90deg, #f12711, #f5af19); }
+        .role-staff { background: linear-gradient(90deg, #00c6ff, #0072ff); }
+        .role-media { background: linear-gradient(90deg, #8E2DE2, #4A00E0); }
+        .role-attendee { background: linear-gradient(90deg, #11998e, #38ef7d); }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Pass Generator</h2>
+        
+        <form id="idForm">
+            <input type="text" id="eventName" placeholder="Event Name (e.g. TECH SUMMIT '26)" required>
+            <input type="text" id="name" placeholder="Attendee Full Name" required>
+            <input type="text" id="company" placeholder="Company / Organization" required>
+            <input type="text" id="idNumber" placeholder="Ticket/ID Number" required>
+            
+            <select id="roleSelect" required>
+                <option value="" disabled selected>Select Event Role</option>
+                <option value="VIP">VIP Guest</option>
+                <option value="STAFF">Event Staff</option>
+                <option value="MEDIA">Press / Media</option>
+                <option value="ATTENDEE">General Attendee</option>
+            </select>
+
+            <input type="file" id="photo" accept="image/*" required>
+            
+            <button type="submit" id="submitBtn">Generate Pass</button>
+        </form>
+
+        <button id="downloadBtn" class="btn-download">⬇ Download as Image</button>
+    </div>
+
+    <div class="card-wrapper" id="cardWrapper">
+        <div class="id-card" id="idCard">
+            <div class="lanyard-hole"></div>
+            
+            <div class="card-header">
+                <div class="event-name" id="cardEventName">TECH SUMMIT</div>
+            </div>
+            
+            <div class="card-body">
+                <div class="photo-container">
+                    <img id="cardPhoto" src="" alt="Attendee Photo">
+                </div>
+                
+                <div class="attendee-name" id="cardName">John Doe</div>
+                <div class="attendee-company" id="cardCompany">Tech Corp Inc.</div>
+                
+                <div class="qr-placeholder">
+                    ID: <span id="cardIdNumber">123456789</span>
+                </div>
+            </div>
+
+            <div class="role-badge role-attendee" id="cardRole">ATTENDEE</div>
+        </div>
+    </div>
+
+    <script>
+        const idForm = document.getElementById('idForm');
+        const cardWrapper = document.getElementById('cardWrapper');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const idCardElement = document.getElementById('idCard');
+
+        // 1. Handle Form Submission & Generation
+        idForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Fetch values
+            const eventName = document.getElementById('eventName').value;
+            const name = document.getElementById('name').value;
+            const company = document.getElementById('company').value;
+            const idNumber = document.getElementById('idNumber').value;
+            const role = document.getElementById('roleSelect').value;
+            const photoFile = document.getElementById('photo').files[0];
+
+            if (!photoFile) return;
+
+            // Generate Image URL
+            const photoURL = URL.createObjectURL(photoFile);
+
+            // Populate Card Data
+            document.getElementById('cardEventName').innerText = eventName;
+            document.getElementById('cardName').innerText = name;
+            document.getElementById('cardCompany').innerText = company;
+            document.getElementById('cardIdNumber').innerText = idNumber;
+            document.getElementById('cardPhoto').src = photoURL;
+            
+            // Set Role Text and Color Banner
+            const roleBadge = document.getElementById('cardRole');
+            roleBadge.innerText = role;
+            
+            // Remove old role classes and add the new one
+            roleBadge.className = 'role-badge'; 
+            if(role === 'VIP') roleBadge.classList.add('role-vip');
+            else if(role === 'STAFF') roleBadge.classList.add('role-staff');
+            else if(role === 'MEDIA') roleBadge.classList.add('role-media');
+            else roleBadge.classList.add('role-attendee');
+
+            // Reveal the Card and Download Button
+            cardWrapper.style.display = 'flex';
+            downloadBtn.style.display = 'block';
+        });
+
+        // 2. Handle Image Download using html2canvas
+        downloadBtn.addEventListener('click', function() {
+            // Temporarily hide the lanyard hole for a cleaner downloaded image (optional, but looks better digitally)
+            const hole = document.querySelector('.lanyard-hole');
+            hole.style.background = '#ffffff'; 
+            hole.style.boxShadow = 'none';
+
+            // Use html2canvas to take a picture of the specific 'idCard' div
+            // scale: 2 ensures high-resolution output
+            html2canvas(idCardElement, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
+                
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.download = `${document.getElementById('name').value.replace(/\s+/g, '_')}_EventPass.png`;
+                
+                // Convert canvas to image data URL
+                link.href = canvas.toDataURL('image/png');
+                
+                // Trigger the download
+                link.click();
+
+                // Restore Lanyard hole styles on the web preview
+                hole.style.background = '#f4f4f4';
+                hole.style.boxShadow = 'inset 0 3px 6px rgba(0,0,0,0.3)';
+            });
+        });
+    </script>
+
+</body>
+</html>

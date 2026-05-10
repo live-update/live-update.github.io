@@ -10,7 +10,7 @@
     --surface: #f4f6f8;
     --text: #1a1a1a;
     --text-muted: #666;
-    --accent: #0056b3;
+    --accent: #0f5bfa;
     --danger: #dc3545;
     --success: #28a745;
     --border: #e0e0e0;
@@ -392,9 +392,9 @@
         sysStatus.style.color = "var(--danger)";
       } else if (!isConnected) {
         appContainer.classList.add('app-locked');
-        updateBadge("NO DB", "var(--warning)", false);
+        updateBadge("NO DB", "var(--accent)", false);
         sysStatus.innerText = "No server";
-        sysStatus.style.color = "var(--warning)";
+        sysStatus.style.color = "var(--accent)";
       } else {
         appContainer.classList.remove('app-locked');
         updateBadge("LIVE", "var(--danger)", true);

@@ -10,7 +10,7 @@
     --surface: #f4f6f8;
     --text: #1a1a1a;
     --text-muted: #666;
-    --accent: #00938f;
+    --accent: #0f5bfa;
     --danger: #dc3545;
     --success: #28a745;
     --border: #e0e0e0;
@@ -101,6 +101,16 @@
       font-family: inherit;
       margin-bottom: 10px;
     }
+    
+    /* Override global input style for the toggle */
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
     label {
       display: block;
       font-size: 14px;
@@ -108,6 +118,16 @@
       color: var(--text-muted);
       margin-bottom: 5px;
       text-transform: capitalize;
+    }
+
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text);
+      text-transform: none;
     }
 
     .keypad {
@@ -347,7 +367,15 @@
             <button class="btn-fx" style="background: var(--danger);" onclick="triggerEffect('OUT')">Out</button>
           </div>
         </div>
-      </div>
+
+        <div style="margin-top:20px; padding-top: 15px; border-top: 1px solid var(--border);">
+          <label>Visual Effects</label>
+          <label class="toggle-wrapper">
+            <input type="checkbox" id="particleToggle">
+            Show Background Particles
+          </label>
+        </div>
+        </div>
     </div>
 
     <script type="module">
@@ -383,7 +411,6 @@
       let state = {
         lastUpdated: Date.now(),
         history: [],
-        // Undo array now lives inside the state
         batTeam: "IND",
         bowlTeam: "AUS",
         runs: 0,
@@ -407,7 +434,8 @@
         brandLogo: "",
         customTitle: "",
         customText: "",
-        customImg: ""
+        customImg: "",
+        showParticles: false // Added state for particles
       };
 
       let isConnected = false;
@@ -442,7 +470,6 @@
           sysStatus.innerText = "Score Board";
           sysStatus.style.color = "var(--text)";
 
-          // If internet just came back and we made offline changes, push them to Firebase silently!
           if (needsSync) {
             set(matchRef, state);
             needsSync = false;
@@ -469,15 +496,15 @@
       function saveState() {
         if (!state.history) state.history = [];
         const stateClone = JSON.parse(JSON.stringify(state));
-        delete stateClone.history; // Prevent massive nested payloads
+        delete stateClone.history;
         state.history.push(stateClone);
-        if (state.history.length > 40) state.history.shift(); // Keep last 40 actions
+        if (state.history.length > 40) state.history.shift(); 
       }
 
       window.undo = () => {
         if (state.history && state.history.length > 0) {
           const prevState = state.history.pop();
-          const currentHistory = state.history; // Preserve the history array itself
+          const currentHistory = state.history; 
           state = prevState;
           state.history = currentHistory;
           syncToFirebase();
@@ -629,6 +656,9 @@
         safeUpdate('customTitle', state.customTitle);
         safeUpdate('customText', state.customText);
         safeUpdate('customImg', state.customImg);
+        
+        // Update Particle Toggle UI
+        document.getElementById('particleToggle').checked = !!state.showParticles;
 
         document.querySelectorAll('.scene-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById('btn-scene-' + (state.activeScene || 'live'));
@@ -656,23 +686,27 @@
         state.customTitle = document.getElementById('customTitle').value;
         state.customText = document.getElementById('customText').value;
         state.customImg = document.getElementById('customImg').value;
-        state.lastUpdated = Date.now(); // Mark fresh timestamp
+        
+        // Added mapping for particle toggle sync
+        state.showParticles = document.getElementById('particleToggle').checked;
+        
+        state.lastUpdated = Date.now(); 
 
         updateUI();
 
-        // 2. BACKUP LOCALLY immediately (True Offline Capability)
+        // 2. BACKUP LOCALLY
         localStorage.setItem('admin_match_backup', JSON.stringify(state));
 
-        // 3. PUSH TO FIREBASE if possible
+        // 3. PUSH TO FIREBASE 
         if (navigator.onLine && isConnected) {
           await set(matchRef, state).catch(e => console.warn("Firebase sync delayed"));
           needsSync = false;
         } else {
-          needsSync = true; // Mark to push when internet returns
+          needsSync = true; 
         }
       }
 
-      // Allow typing in textboxes to trigger sync
+      // Allow typing/clicking in inputs to trigger sync
       document.querySelectorAll('input').forEach(el => el.addEventListener('change', syncToFirebase));
 
       // --- OFFLINE-FIRST INITIALIZATION ---
@@ -690,19 +724,17 @@
           if (snapshot.exists()) {
             const firebaseState = snapshot.val();
 
-            // CONFLICT RESOLUTION: If our local offline backup is NEWER than the cloud,
-            // we ignore the cloud and force the cloud to accept our local data.
             if (!state.lastUpdated || (firebaseState.lastUpdated > state.lastUpdated)) {
               state = firebaseState;
               if (!state.thisOver) state.thisOver = [];
               if (!state.history) state.history = [];
+              if (state.showParticles === undefined) state.showParticles = false; // Graceful loading for legacy data
               updateUI();
             } else if (state.lastUpdated > firebaseState.lastUpdated) {
-              // Local is newer! (Admin scored offline and just re-opened app)
               set(matchRef, state);
             }
           } else {
-            set(matchRef, state); // Database is empty, initialize it.
+            set(matchRef, state);
           }
           evaluateSystemStatus();
         });
